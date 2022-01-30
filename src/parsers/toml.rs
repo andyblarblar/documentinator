@@ -31,3 +31,16 @@ impl Parser for TomlParser {
         self.parse_str(string)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::{Parser, TomlParser};
+
+    #[test]
+    fn test_toml_parse() {
+        let wld = include_str!("../../test_assets/white_line_detection.doctor.toml");
+        let mut parser = TomlParser::default();
+
+        parser.parse_str(wld.to_string()).unwrap();
+    }
+}

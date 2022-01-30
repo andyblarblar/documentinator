@@ -5,7 +5,7 @@ use anyhow::Result;
 
 use crate::doc_types::Doc;
 
-pub mod toml_parser;
+pub mod toml;
 
 pub trait Parser: Default {
     fn parse_str(&mut self, string: String) -> Result<Doc>;

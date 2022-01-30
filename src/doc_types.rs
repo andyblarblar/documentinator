@@ -1,15 +1,13 @@
-use std::path::PathBuf;
-
 use serde_derive::{Deserialize, Serialize};
 
 /// Top level Doc representation
-#[derive(Deserialize, Serialize ,Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct Doc {
     /// Each doc can contain many nodes
     pub nodes: Vec<Node>,
 }
 
-#[derive(Deserialize, Serialize ,Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct Node {
     /// Name of the node
     pub node_name: String,
@@ -18,7 +16,7 @@ pub struct Node {
     /// Summary of functionality
     pub summary: String,
     /// Description of potential improvements to the node
-    pub potential_improvements: String,
+    pub potential_improvements: Option<String>,
     /// Anything else to be included in the documentation
     pub misc: Option<String>,
     /// Topics published to, if any
@@ -31,19 +29,19 @@ pub struct Node {
     pub launch: LaunchInfo,
 }
 
-#[derive(Deserialize, Serialize ,Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct Topic {
     pub name: String,
     pub description: String,
 }
 
-#[derive(Deserialize, Serialize ,Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct Param {
     pub name: String,
     pub description: String,
 }
 
-#[derive(Deserialize, Serialize ,Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct LaunchInfo {
     pub file_path: String,
     pub usage: String,
