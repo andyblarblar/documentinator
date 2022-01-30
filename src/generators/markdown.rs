@@ -35,7 +35,7 @@ impl Generator for MarkdownGenerator {
                     writeln!(&mut buf, "### Publishes")?;
 
                     for pubz in pubs {
-                        writeln!(&mut buf, "- {}: {}", pubz.name, pubz.description)?;
+                        writeln!(&mut buf, "- `{}`: {}", pubz.name, pubz.description)?;
                     }
                     writeln!(&mut buf)?;
                 }
@@ -44,7 +44,7 @@ impl Generator for MarkdownGenerator {
                     writeln!(&mut buf, "### Subscribes")?;
 
                     for sub in subs {
-                        writeln!(&mut buf, "- {}: {}", sub.name, sub.description)?;
+                        writeln!(&mut buf, "- `{}`: {}", sub.name, sub.description)?;
                     }
                     writeln!(&mut buf)?;
                 }
@@ -55,7 +55,7 @@ impl Generator for MarkdownGenerator {
                 writeln!(&mut buf, "## Params")?;
 
                 for param in params {
-                    writeln!(&mut buf, "- {}: {}", param.name, param.description)?;
+                    writeln!(&mut buf, "- `{}`: {}", param.name, param.description)?;
                 }
                 writeln!(&mut buf)?;
             }
@@ -78,7 +78,7 @@ impl Generator for MarkdownGenerator {
                 writeln!(&mut buf, "## Args")?;
 
                 for arg in args {
-                    writeln!(&mut buf, "- {}: {}", arg.name, arg.description)?;
+                    writeln!(&mut buf, "- `{}`: {}", arg.name, arg.description)?;
                 }
                 writeln!(&mut buf)?;
             }
