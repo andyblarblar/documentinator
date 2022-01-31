@@ -6,12 +6,12 @@ use anyhow::Context;
 use anyhow::Result;
 
 use crate::doc_types::Doc;
-use crate::parsers::Parser;
+use crate::parsers::ConfigParser;
 
 #[derive(Default)]
 pub struct TomlParser {}
 
-impl Parser for TomlParser {
+impl ConfigParser for TomlParser {
     fn parse_str(&mut self, string: String) -> Result<Doc> {
         toml::from_str(&string).context("Failed to parse TOML string.")
     }

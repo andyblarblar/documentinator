@@ -1,0 +1,46 @@
+#This is a template file. Delete things to your liking.
+[[nodes]]
+node_name = 'My cool node'
+#Relitive to this file
+source_file = ['./src/some.cpp']
+summary = '''
+This is your node summary.
+'''
+potential_improvements = 'Burn with fire'
+misc = 'An (optional) description of something else.'
+
+#Your published topics
+[[nodes.publishes]]
+name = 'camera_cloud'
+description = 'pointcloud topic.'
+
+[[nodes.publishes]]
+name = 'camera_cloud2'
+description = 'pointcloud2d topic.'
+
+#Your subscribed topics
+[[nodes.subscribes]]
+name = 'image_raw'
+description = 'The raw image (not-debayerd) from the camera node/gazebo.'
+
+[[nodes.subscribes]]
+name = 'camera_info'
+description = 'The standard camera info topic, used to find things like resolution.'
+
+#Your node parameters
+[[nodes.params]]
+name = 'kernel_size'
+description = 'Size of the erosion kernel. Default 5'
+
+#Your launchfile info
+[nodes.launch]
+file_path = './launch/WLD.launch.py'
+usage = 'just launch I guess'
+
+[[nodes.launch.args]]
+name = 'arg1'
+description = 'Some arg to the launchfile'
+
+[[nodes.launch.args]]
+name = 'arg2'
+description = 'Another arg to the launchfile'
