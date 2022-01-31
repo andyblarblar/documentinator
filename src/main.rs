@@ -25,7 +25,7 @@ fn main() -> Result<()> {
 
     match cli.command {
         Commands::Gen(comm) => {
-            let iter = std::fs::read_dir(".")?;
+            let iter = std::fs::read_dir(comm.source_dir)?;
 
             //Do single directory if not recursing
             if !comm.recurse {
@@ -118,6 +118,7 @@ fn main() -> Result<()> {
                     }
                 }
             }
+            println!("done.")
         }
         Commands::Init { node_name } => {
             let mut file = File::create(format!("./{node_name}.doctor.toml"))
