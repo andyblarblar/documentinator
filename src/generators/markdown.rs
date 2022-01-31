@@ -2,16 +2,16 @@ use std::fmt::Write as FmtWrite;
 
 use anyhow::{Context, Result};
 
-use crate::Doc;
 use crate::doc_types::Node;
 use crate::generators::Generator;
+use crate::Doc;
 
 /// Generates docs to markdown.
 #[derive(Default)]
 pub struct MarkdownGenerator {}
 
 impl Generator for MarkdownGenerator {
-    fn generate_string(&mut self, nodes: Doc) -> anyhow::Result<Vec<String>> {
+    fn generate_string(&mut self, nodes: Doc) -> anyhow::Result<Vec<(String, String)>> {
         fn gen_single(node: Node) -> Result<String> {
             let mut buf = String::new();
 
@@ -96,10 +96,13 @@ impl Generator for MarkdownGenerator {
         //Actually gen docs
         for node in nodes.nodes {
             let node_name = node.node_name.clone();
-            nodes_doc.push(gen_single(node).context(format!(
-                "Failed to generate markdown for node: {}",
-                node_name
-            ))?);
+            nodes_doc.push((
+                node.node_name.clone(),
+                gen_single(node).context(format!(
+                    "Failed to generate markdown for node: {}",
+                    node_name
+                ))?,
+            ));
         }
 
         Ok(nodes_doc)
@@ -108,9 +111,9 @@ impl Generator for MarkdownGenerator {
 
 #[cfg(test)]
 mod test {
-    use crate::{Parser, TomlParser};
-    use crate::generators::Generator;
     use crate::generators::markdown::MarkdownGenerator;
+    use crate::generators::Generator;
+    use crate::{ConfigParser, Parser, TomlParser};
 
     #[test]
     fn test_md_gen() {
