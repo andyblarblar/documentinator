@@ -29,8 +29,7 @@ docTor has 3 commands:
 
 ### Generating
 
-Doctor generates files by searching in a passed directory for config files. If -r is passed, it will also recurse. By default, doctor is compiled
-to run this search in parallel, increasing performance if a very large set of directories are used.
+Doctor generates files by searching in a passed directory for config files. If -r is passed, it will also recurse.
 
 Each node parsed from config files will have its own documentation emitted in the output directory.
 

@@ -1,10 +1,10 @@
+use std::collections::VecDeque;
 use std::fs::{DirEntry, File, ReadDir};
 use std::io::Write;
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use concurrent_queue::ConcurrentQueue;
 
 use crate::cli::commands::{Cli, Commands, GenCommand, GenTypes};
 use crate::doc_types::Doc;
@@ -53,59 +53,15 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-//TODO move these to another file and cleanup
-
-/// Generates files using rayon, for a small performance boost with huge directory sizes.
-#[cfg(feature = "multi_thread")]
-fn generate_files(comm: GenCommand) -> Result<()> {
-    use rayon::prelude::*;
-    use std::sync::Arc;
-
-    let iter = std::fs::read_dir(comm.source_dir.clone())?;
-
-    log::debug!("Beginning parallel recursive search");
-
-    //To recurse, build a queue of dir iterators. Need to sync across threads
-    let dir_queue = Arc::new(ConcurrentQueue::unbounded());
-    dir_queue.push(iter)?;
-
-    //Dyn dispatch to allow for CLI flags to choose the doc types
-    let parser: Arc<dyn ConfigParser + Send + Sync> = Arc::new(TomlParser::default());
-    let generator: Arc<dyn Generator + Send + Sync> = match comm.doc_type {
-        GenTypes::Markdown => Arc::new(MarkdownGenerator::default()),
-    };
-
-    //Iteratively recurse using queue to buffer future directories to crawl.
-    while let Ok(iter) = dir_queue.pop() {
-        log::trace!("recurring new directory");
-
-        //Clone to send to thread pool
-        let parser = parser.clone();
-        let generator = generator.clone();
-        let dir_queue = dir_queue.clone();
-
-        //Generate each doc in parallel
-        iter.par_bridge()
-            .map(|file| {
-                process_file(&comm, &*dir_queue, &*parser, &*generator, file?)?;
-                Ok(())
-            })
-            .collect::<Result<Vec<()>>>()?; //Pool all the errors into one
-    }
-
-    Ok(())
-}
-
 /// Generates files without rayon in case the environment does not support it.
-#[cfg(not(feature = "multi_thread"))]
 fn generate_files(comm: GenCommand) -> Result<()> {
     let iter = std::fs::read_dir(comm.source_dir.clone())?;
     //Non threaded recursion
     log::debug!("Beginning single threaded recursive search");
 
     //To recurse, build a queue of dir iterators
-    let dir_queue = ConcurrentQueue::unbounded();
-    dir_queue.push(iter)?;
+    let mut dir_queue = VecDeque::new();
+    dir_queue.push_back(iter);
 
     let parser: Box<dyn ConfigParser> = Box::new(TomlParser::default());
     let generator: Box<dyn Generator> = match comm.doc_type {
@@ -113,11 +69,11 @@ fn generate_files(comm: GenCommand) -> Result<()> {
     };
 
     //Iteratively recurse using queue to buffer future directories to crawl.
-    while let Ok(iter) = dir_queue.pop() {
+    while let Some(iter) = dir_queue.pop_front() {
         log::trace!("recurring new directory");
 
         for file in iter {
-            process_file(&comm, &dir_queue, &*parser, &*generator, file?)?;
+            process_file(&comm, &mut dir_queue, &*parser, &*generator, file?)?;
         }
     }
 
@@ -129,7 +85,7 @@ fn generate_files(comm: GenCommand) -> Result<()> {
 /// Handles a single file in the generator.
 fn process_file(
     comm: &GenCommand,
-    dir_queue: &ConcurrentQueue<ReadDir>,
+    dir_queue: &mut VecDeque<ReadDir>,
     parser: &dyn ConfigParser,
     generator: &dyn Generator,
     file: DirEntry,
@@ -137,7 +93,7 @@ fn process_file(
     //If we find another dir to search, add to queue, then finish current dir
     if file.path().is_dir() && comm.recurse {
         log::trace!("adding dir to recurse");
-        dir_queue.push(std::fs::read_dir(file.path())?)?;
+        dir_queue.push_back(std::fs::read_dir(file.path())?);
         return Ok(());
     }
 

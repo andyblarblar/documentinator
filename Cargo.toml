@@ -1,6 +1,6 @@
 [package]
 name = "documentinator"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 authors = ["Andrew Ealovega"]
 
@@ -16,19 +16,13 @@ categories = ["command-line-interface", "command-line-utilities", "develupment-t
 keywords = ["ros", "documentation"]
 
 
-[features]
-default = ['multi_thread']
-multi_thread = ['rayon']
-
 [dependencies]
 toml = "^0.5"
 clap = { version = "^3.0", features = ['derive'] }
 clap-verbosity-flag = "^0.4"
+
 log = "^0.4"
 env_logger = "^0.9"
-
-rayon = { version = "^1.5", optional = true }
-concurrent-queue = "^1.2"
 
 serde_derive = "1"
 serde = "1"
