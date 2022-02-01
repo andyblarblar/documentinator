@@ -4,6 +4,10 @@ Documentinator (aka docTor or doctor) is a Ros2 documentation generator and lint
 config files and produces common node documentation in order to ease the burden of managing documentation style and copying.
 It can also (sometime, WIP) lint the source files mentioned in the config file to ensure that the documentation is up-to-date.
 
+
+To install doctor, first [install rust](https://www.rust-lang.org/learn/get-started), then run: ``cargo install documentinator``. 
+Doctor should now be on your path. Just run this command again to update when possible.
+
 TODO:
 
 Doctor is currently usable for documentation generation, but nothing else. It also cannot be invoked as doctor by default yet.
