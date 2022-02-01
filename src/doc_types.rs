@@ -1,3 +1,5 @@
+//! Serializable documentation structures.
+
 use serde_derive::{Deserialize, Serialize};
 
 /// Top level Doc representation

@@ -29,6 +29,8 @@ pub struct GenCommand {
     /// Type of document to generate.
     #[clap(arg_enum, long, default_value_t = GenTypes::Markdown)]
     pub doc_type: GenTypes,
+    #[clap(flatten)]
+    pub verbose: clap_verbosity_flag::Verbosity,
 }
 
 #[derive(Subcommand)]
@@ -40,6 +42,8 @@ pub enum Commands {
     Init {
         /// Node name to be used with config
         node_name: String,
+        #[clap(flatten)]
+        verbose: clap_verbosity_flag::Verbosity,
     },
 
     /// Lint source files to ensure accurate documentation (WIP)

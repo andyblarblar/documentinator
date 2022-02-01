@@ -11,7 +11,7 @@ use crate::Doc;
 pub struct MarkdownGenerator {}
 
 impl Generator for MarkdownGenerator {
-    fn generate_string(&mut self, nodes: Doc) -> anyhow::Result<Vec<(String, String)>> {
+    fn generate_string(&self, nodes: Doc) -> anyhow::Result<Vec<(String, String)>> {
         fn gen_single(node: Node) -> Result<String> {
             let mut buf = String::new();
 
@@ -107,13 +107,17 @@ impl Generator for MarkdownGenerator {
 
         Ok(nodes_doc)
     }
+
+    fn add_file_extension(&self, filename: String) -> String {
+        format!("{filename}.md")
+    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::generators::markdown::MarkdownGenerator;
     use crate::generators::Generator;
-    use crate::{ConfigParser, Parser, TomlParser};
+    use crate::{ConfigParser, TomlParser};
 
     #[test]
     fn test_md_gen() {
