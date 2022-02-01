@@ -12,7 +12,7 @@ homepage = "https://github.com/andyblarblar/documentinator"
 repository = "https://github.com/andyblarblar/documentinator"
 documentation = "https://docs.rs/documentinator/"
 readme = "README.md"
-categories = ["command-line-interface", "command-line-utilities", "develupment-tools"]
+categories = ["command-line-interface", "command-line-utilities"]
 keywords = ["ros", "documentation"]
 
 

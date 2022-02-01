@@ -1,12 +1,11 @@
-use std::collections::VecDeque;
-use std::fs::{DirEntry, File, ReadDir};
+use std::fs::File;
 use std::io::Write;
-use std::path::PathBuf;
 
 use anyhow::{Context, Result};
 use clap::Parser;
 
 use crate::cli::commands::{Cli, Commands, GenCommand, GenTypes};
+use crate::cli::gen::generate_files;
 use crate::doc_types::Doc;
 use crate::generators::markdown::MarkdownGenerator;
 use crate::generators::Generator;
@@ -18,6 +17,7 @@ mod doc_types;
 mod generators;
 mod parsers;
 
+/// Text of file used in init
 const DEMO_CONFIG_STR: &str = include_str!("../assets/demo.doctor.toml");
 
 fn main() -> Result<()> {
@@ -29,9 +29,14 @@ fn main() -> Result<()> {
                 .filter_level(comm.verbose.log_level_filter())
                 .init();
 
-            generate_files(comm)?;
+            let stats = generate_files(comm)?;
 
-            println!("done.")
+            println!(
+                "done. \n Processed: \n {} files \n {} directories \n in {}s",
+                stats.files_read,
+                stats.dir_read,
+                stats.duration.as_secs_f64()
+            );
         }
         Commands::Init { node_name, .. } => {
             let mut file = File::create(format!("./{node_name}.doctor.toml"))
@@ -47,81 +52,6 @@ fn main() -> Result<()> {
         }
         Commands::Verify { .. } => {
             todo!()
-        }
-    }
-
-    Ok(())
-}
-
-/// Generates files without rayon in case the environment does not support it.
-fn generate_files(comm: GenCommand) -> Result<()> {
-    let iter = std::fs::read_dir(comm.source_dir.clone())?;
-    //Non threaded recursion
-    log::debug!("Beginning single threaded recursive search");
-
-    //To recurse, build a queue of dir iterators
-    let mut dir_queue = VecDeque::new();
-    dir_queue.push_back(iter);
-
-    let parser: Box<dyn ConfigParser> = Box::new(TomlParser::default());
-    let generator: Box<dyn Generator> = match comm.doc_type {
-        GenTypes::Markdown => Box::new(MarkdownGenerator::default()),
-    };
-
-    //Iteratively recurse using queue to buffer future directories to crawl.
-    while let Some(iter) = dir_queue.pop_front() {
-        log::trace!("recurring new directory");
-
-        for file in iter {
-            process_file(&comm, &mut dir_queue, &*parser, &*generator, file?)?;
-        }
-    }
-
-    log::trace!("queue size: {}", dir_queue.len());
-
-    Ok(())
-}
-
-/// Handles a single file in the generator.
-fn process_file(
-    comm: &GenCommand,
-    dir_queue: &mut VecDeque<ReadDir>,
-    parser: &dyn ConfigParser,
-    generator: &dyn Generator,
-    file: DirEntry,
-) -> Result<()> {
-    //If we find another dir to search, add to queue, then finish current dir
-    if file.path().is_dir() && comm.recurse {
-        log::trace!("adding dir to recurse");
-        dir_queue.push_back(std::fs::read_dir(file.path())?);
-        return Ok(());
-    }
-
-    //Read any config files
-    if parser.match_filename(
-        file.file_name()
-            .to_str()
-            .context("Filename contains invalid chars")?,
-    ) {
-        let path = file.path();
-        log::debug!("Reading config: {path:?}");
-
-        //Parse and gen doc
-        let config = parser.parse_path(path)?;
-        let docs = generator.generate_string(config)?;
-        log::debug!("Generated Doc");
-
-        //Write doc
-        for (name, doc) in docs {
-            let mut path = PathBuf::from(comm.dest_dir.clone());
-            path.push(generator.add_file_extension(name.clone()));
-
-            log::debug!("Writing to: {path:?}");
-
-            let mut file = File::create(path)?;
-            file.write_all(doc.as_bytes())?;
-
-            println!("Created doc for {name}")
         }
     }
 
