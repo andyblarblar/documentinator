@@ -1,4 +1,19 @@
-# development overview
+# Behold, the Documentinator!
+
+Documentinator (aka docTor or doctor) is a Ros2 documentation generator and linter. It takes well-defined and enforced
+config files and produces common node documentation in order to ease the burden of managing documentation style and copying.
+It can also (sometime, WIP) lint the source files mentioned in the config file to ensure that the documentation is up-to-date.
+
+TODO:
+
+Doctor is currently usable for documentation generation, but nothing else. It also cannot be invoked as doctor by default yet.
+
+- [x] Create init
+- [x] Create Generators
+- [ ] Alias to doctor
+- [ ] Create linters
+- [ ] Improve CI experience
+- [ ] Tidy up and document
 
 docTor has 3 commands:
 
@@ -6,12 +21,18 @@ docTor has 3 commands:
 
 `doctor gen` - generates documents
 
-`doctor validate` - runs  linter on code to validate docs are correct
+`doctor verify` - runs  linter on code to validate docs are correct
 
+### Generating
+
+Doctor generates files by searching in a passed directory for config files. If -r is passed, it will also recurse. By default, doctor is compiled
+to run this search in parallel, increasing performance if a very large set of directories are used.
+
+Each node parsed from config files will have its own documentation emitted in the output directory.
+
+### Configuring
 
 Docs will be in nodename.doctor.toml files. Each toml can have n nodes, or each node can have its own file.
-
-Doctor is technically agnostic to document type for both input and output, although Im focusing on TOML and md for now.
 
 ### Example Toml file:
 ```toml
