@@ -108,7 +108,7 @@ impl Generator for MarkdownGenerator {
         Ok(nodes_doc)
     }
 
-    fn add_file_extension(&self, filename: String) -> String {
+    fn add_file_extension(&self, filename: &str) -> String {
         format!("{filename}.md")
     }
 }
@@ -122,10 +122,10 @@ mod test {
     #[test]
     fn test_md_gen() {
         let wld = include_str!("../../test_assets/white_line_detection.doctor.toml");
-        let mut parser = TomlParser::default();
+        let parser = TomlParser::default();
         let parsed = parser.parse_str(wld.to_string()).unwrap();
 
-        let mut gen = MarkdownGenerator::default();
+        let gen = MarkdownGenerator::default();
 
         let md = gen.generate_string(parsed).unwrap();
 

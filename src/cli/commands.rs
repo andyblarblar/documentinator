@@ -26,6 +26,10 @@ pub struct GenCommand {
     /// Recursively search directories for more configs.
     #[clap(long, short)]
     pub recurse: bool,
+    /// Creates a NODES_README.md that links to the other documents, if any.
+    /// Useful for git repos.
+    #[clap(long)]
+    pub readme: bool,
     /// Type of document to generate.
     #[clap(arg_enum, long, default_value_t = GenTypes::Markdown)]
     pub doc_type: GenTypes,

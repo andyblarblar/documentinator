@@ -14,5 +14,5 @@ pub trait Generator {
     fn generate_string(&self, nodes: Doc) -> Result<Vec<(String, String)>>;
 
     /// Adds the file extension of the document type this generator creates to the passed filename.
-    fn add_file_extension(&self, filename: String) -> String;
+    fn add_file_extension(&self, filename: &str) -> String;
 }
