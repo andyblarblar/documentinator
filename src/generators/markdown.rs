@@ -67,20 +67,22 @@ impl Generator for MarkdownGenerator {
             }
 
             //Launchfile
-            writeln!(
-                &mut buf,
-                "# Launch \n `{}` \n {} \n",
-                node.launch.file_path, node.launch.usage
-            )?;
+            if let Some(launch) = node.launch {
+                writeln!(
+                    &mut buf,
+                    "# Launch \n `{}` \n {} \n",
+                    launch.file_path, launch.usage
+                )?;
 
-            //Launch args
-            if let Some(args) = node.launch.args {
-                writeln!(&mut buf, "## Args")?;
+                //Launch args
+                if let Some(args) = launch.args {
+                    writeln!(&mut buf, "## Args")?;
 
-                for arg in args {
-                    writeln!(&mut buf, "- `{}`: {}", arg.name, arg.description)?;
+                    for arg in args {
+                        writeln!(&mut buf, "- `{}`: {}", arg.name, arg.description)?;
+                    }
+                    writeln!(&mut buf)?;
                 }
-                writeln!(&mut buf)?;
             }
 
             //Misc
