@@ -3,13 +3,12 @@
 use std::collections::VecDeque;
 use std::fs::{DirEntry, File};
 use std::io::Write;
-use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
 
-use crate::{ConfigParser, GenCommand, Generator, GenTypes, MarkdownGenerator, TomlParser};
+use crate::{ConfigParser, GenCommand, GenTypes, Generator, MarkdownGenerator, TomlParser};
 
 /// Generates files through recursion
 pub fn generate_files(comm: GenCommand) -> Result<GenerationResults> {
@@ -139,7 +138,12 @@ fn generate_readme(comm: &GenCommand, nodes: &[String], generator: &dyn Generato
         file_path.push(generator.add_file_extension(node));
 
         file.write_all(format!("- [{}](", node).as_bytes())?;
-        file.write_all(file_path.as_os_str().as_bytes())?;
+        file.write_all(
+            file_path
+                .to_str()
+                .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::Other))?
+                .as_bytes(),
+        )?;
         file.write_all(&[b')', b'\n'])?;
     }
 
