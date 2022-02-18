@@ -7,10 +7,10 @@ use clap::Parser;
 use crate::cli::commands::{Cli, Commands, GenCommand, GenTypes};
 use crate::cli::gen::generate_files;
 use crate::doc_types::Doc;
-use crate::generators::Generator;
 use crate::generators::markdown::MarkdownGenerator;
-use crate::parsers::ConfigParser;
+use crate::generators::Generator;
 use crate::parsers::toml::TomlParser;
+use crate::parsers::ConfigParser;
 
 mod cli;
 mod doc_types;
@@ -33,8 +33,10 @@ fn main() -> Result<()> {
 
             if !stats.nodes_processed.is_empty() {
                 println!("\nGenerated docs for: ");
-                stats.nodes_processed.iter().for_each(|node| {
-                    println!("{node}");
+                stats.nodes_processed.iter().for_each(|doc| {
+                    for node in doc.nodes.iter() {
+                        println!("{}", node.node_name);
+                    }
                 });
                 println!()
             }

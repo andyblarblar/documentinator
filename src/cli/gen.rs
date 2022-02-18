@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
 
-use crate::{ConfigParser, GenCommand, GenTypes, Generator, MarkdownGenerator, TomlParser};
+use crate::{ConfigParser, Doc, GenCommand, GenTypes, Generator, MarkdownGenerator, TomlParser};
 
 /// Generates files through recursion
 pub fn generate_files(comm: GenCommand) -> Result<GenerationResults> {
@@ -70,7 +70,7 @@ pub struct GenerationResults {
     pub files_read: u128,
     pub dir_read: u128,
     pub duration: Duration,
-    pub nodes_processed: Vec<String>,
+    pub nodes_processed: Vec<Doc>,
 }
 
 /// Handles a single file in the generator.
@@ -82,7 +82,7 @@ fn process_file(
     parser: &dyn ConfigParser,
     generator: &dyn Generator,
     file: DirEntry,
-    nodes_processed: &mut Vec<String>,
+    nodes_processed: &mut Vec<Doc>,
 ) -> Result<bool> {
     //If we find another dir to search, add to queue, then finish current dir
     if file.path().is_dir() && comm.recurse {
@@ -102,6 +102,7 @@ fn process_file(
 
         //Parse and gen doc
         let config = parser.parse_path(path)?;
+        nodes_processed.push(config.clone());
         let docs = generator.generate_string(config)?;
         log::debug!("Generated Doc");
 
@@ -116,7 +117,6 @@ fn process_file(
             file.write_all(doc.as_bytes())?;
 
             println!("Created doc for {name}");
-            nodes_processed.push(name)
         }
 
         return Ok(true);
@@ -126,26 +126,27 @@ fn process_file(
 }
 
 /// Generates a readme file in the dest dir that contains a table of contents to the other node docs.
-fn generate_readme(comm: &GenCommand, nodes: &[String], generator: &dyn Generator) -> Result<()> {
+fn generate_readme(comm: &GenCommand, docs: &[Doc], generator: &dyn Generator) -> Result<()> {
     let mut path = PathBuf::from(comm.dest_dir.clone());
     path.push("NODES_README.md");
     let mut file = File::create(path)?;
 
-    file.write_all(b"# Nodes in package \n")?; //TODO get package name here somehow, I think we can make a vec of Docs and add a section to the README for each Doc
+    // Add a block for each package
+    for doc in docs {
+        file.write_all(format!("# Nodes in package {}\n", &doc.package_name).as_bytes())?;
+        for node in doc.nodes.iter() {
+            let mut file_path = PathBuf::from(comm.dest_dir.clone());
+            file_path.push(generator.add_file_extension(&node.node_name));
 
-    for node in nodes {
-        let mut file_path = PathBuf::from(comm.dest_dir.clone());
-        file_path.push(generator.add_file_extension(node));
-
-        file.write_all(format!("- [{}](", node).as_bytes())?;
-        file.write_all(
-            file_path
-                .to_str()
-                .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::Other))?
-                .as_bytes(),
-        )?;
-        file.write_all(&[b')', b'\n'])?;
+            file.write_all(format!("- [{}](", &node.node_name).as_bytes())?;
+            file.write_all(
+                file_path
+                    .to_str()
+                    .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::Other))?
+                    .as_bytes(),
+            )?;
+            file.write_all(&[b')', b'\n'])?;
+        }
     }
-
     Ok(())
 }
