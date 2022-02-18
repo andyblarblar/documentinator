@@ -131,7 +131,7 @@ fn generate_readme(comm: &GenCommand, nodes: &[String], generator: &dyn Generato
     path.push("NODES_README.md");
     let mut file = File::create(path)?;
 
-    file.write_all(b"# Nodes in package \n")?;
+    file.write_all(b"# Nodes in package \n")?; //TODO get package name here somehow, I think we can make a vec of Docs and add a section to the README for each Doc
 
     for node in nodes {
         let mut file_path = PathBuf::from(comm.dest_dir.clone());

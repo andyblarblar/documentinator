@@ -5,7 +5,11 @@ use serde_derive::{Deserialize, Serialize};
 /// Top level Doc representation
 #[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
 pub struct Doc {
-    /// Each doc can contain many nodes
+    /// Name of the package containing all of the nodes in this doc.
+    pub package_name: String,
+    /// Optional link to the repo containing this package.
+    pub repo: Option<String>,
+    /// The nodes in this package.
     pub nodes: Vec<Node>,
 }
 
