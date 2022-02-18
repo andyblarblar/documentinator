@@ -1,3 +1,6 @@
+package_name = "white line detection"
+repo = "https://github.com/iscumd/white_line_detection"
+
 [[nodes]]
 node_name = 'White_line_detection'
 source_file = ['/src/white_line_detection.cpp']

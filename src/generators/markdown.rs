@@ -12,14 +12,21 @@ pub struct MarkdownGenerator {}
 
 impl Generator for MarkdownGenerator {
     fn generate_string(&self, nodes: Doc) -> anyhow::Result<Vec<(String, String)>> {
-        fn gen_single(node: Node) -> Result<String> {
+        fn gen_single(node: &Node, nodes: &Doc) -> Result<String> {
             let mut buf = String::new();
 
             writeln!(&mut buf, "# {}", node.node_name)?;
 
+            //Add repo link
+            if let Some(ref lnk) = nodes.repo {
+                writeln!(&mut buf, "From package '[{}]({})'", nodes.package_name, lnk)?;
+            } else {
+                writeln!(&mut buf, "From package '{}'", nodes.package_name)?;
+            }
+
             //Source files
             writeln!(&mut buf, "# File")?;
-            for src in node.source_file {
+            for src in node.source_file.clone() {
                 writeln!(&mut buf, "`{}`", src)?;
             }
             writeln!(&mut buf)?;
@@ -31,7 +38,7 @@ impl Generator for MarkdownGenerator {
             if node.subscribes.is_some() || node.publishes.is_some() {
                 writeln!(&mut buf, "## Topics\n")?;
 
-                if let Some(pubs) = node.publishes {
+                if let Some(ref pubs) = node.publishes {
                     writeln!(&mut buf, "### Publishes")?;
 
                     for pubz in pubs {
@@ -40,7 +47,7 @@ impl Generator for MarkdownGenerator {
                     writeln!(&mut buf)?;
                 }
 
-                if let Some(subs) = node.subscribes {
+                if let Some(ref subs) = node.subscribes {
                     writeln!(&mut buf, "### Subscribes")?;
 
                     for sub in subs {
@@ -51,7 +58,7 @@ impl Generator for MarkdownGenerator {
             }
 
             //Params
-            if let Some(params) = node.params {
+            if let Some(ref params) = node.params {
                 writeln!(&mut buf, "## Params")?;
 
                 for param in params {
@@ -61,13 +68,13 @@ impl Generator for MarkdownGenerator {
             }
 
             //Improvements
-            if let Some(improve) = node.potential_improvements {
+            if let Some(ref improve) = node.potential_improvements {
                 writeln!(&mut buf, "## Potential Improvements")?;
                 writeln!(&mut buf, "{} \n", improve)?;
             }
 
             //Launchfile
-            if let Some(launch) = node.launch {
+            if let Some(ref launch) = node.launch {
                 writeln!(
                     &mut buf,
                     "# Launch \n `{}` \n {} \n",
@@ -75,7 +82,7 @@ impl Generator for MarkdownGenerator {
                 )?;
 
                 //Launch args
-                if let Some(args) = launch.args {
+                if let Some(ref args) = launch.args {
                     writeln!(&mut buf, "## Args")?;
 
                     for arg in args {
@@ -86,7 +93,7 @@ impl Generator for MarkdownGenerator {
             }
 
             //Misc
-            if let Some(misc) = node.misc {
+            if let Some(ref misc) = node.misc {
                 writeln!(&mut buf, "# Misc \n {} ", misc)?;
             }
 
@@ -96,11 +103,11 @@ impl Generator for MarkdownGenerator {
         let mut nodes_doc = vec![];
 
         //Actually gen docs
-        for node in nodes.nodes {
+        for node in nodes.nodes.iter() {
             let node_name = node.node_name.clone();
             nodes_doc.push((
                 node.node_name.clone(),
-                gen_single(node).context(format!(
+                gen_single(node, &nodes).context(format!(
                     "Failed to generate markdown for node: {}",
                     node_name
                 ))?,
