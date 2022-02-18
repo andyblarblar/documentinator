@@ -31,7 +31,8 @@ docTor has 3 commands:
 
 Doctor generates files by searching in a passed directory for config files. If -r is passed, it will also recurse.
 
-Each node parsed from config files will have its own documentation emitted in the output directory.
+Each config will generate doc for each node. `--readme` can be used to generate a readme.md that links to all the 
+generated node docs. This is useful for generating readmes for GitHub repos in a CI action.
 
 ### Configuring
 
@@ -39,6 +40,9 @@ Docs will be in nodename.doctor.toml files. Each toml can have n nodes, or each 
 
 ### Example Toml file:
 ```toml
+package_name = "white line detection"
+repo = "https://github.com/iscumd/white_line_detection"
+
 [[nodes]]
 node_name = 'White_line_detection'
 source_file = ['/src/white_line_detection.cpp']
@@ -83,5 +87,4 @@ description = 'Some arg to the launchfile'
 [[nodes.launch.args]]
 name = 'arg2'
 description = 'Another arg to the launchfile'
-
 ```
