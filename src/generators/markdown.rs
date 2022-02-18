@@ -19,9 +19,9 @@ impl Generator for MarkdownGenerator {
 
             //Add repo link
             if let Some(ref lnk) = nodes.repo {
-                writeln!(&mut buf, "From package [{}]({})", nodes.package_name, lnk)?;
+                writeln!(&mut buf, "From package '[{}]({})'", nodes.package_name, lnk)?;
             } else {
-                writeln!(&mut buf, "From package {}", nodes.package_name)?;
+                writeln!(&mut buf, "From package '{}'", nodes.package_name)?;
             }
 
             //Source files

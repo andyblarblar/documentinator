@@ -131,7 +131,7 @@ fn generate_readme(comm: &GenCommand, docs: &[Doc], generator: &dyn Generator) -
     path.push("NODES_README.md");
     let mut file = File::create(path)?;
 
-    // Add a block for each package
+    // Add a block for each package TODO find a way to group different docs with the same package name
     for doc in docs {
         file.write_all(format!("# Nodes in package {}\n", &doc.package_name).as_bytes())?;
         for node in doc.nodes.iter() {
