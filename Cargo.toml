@@ -14,7 +14,7 @@ documentation = "https://docs.rs/documentinator/"
 readme = "README.md"
 categories = ["command-line-interface", "command-line-utilities"]
 keywords = ["ros", "documentation"]
-
+rust-version="1.59"
 
 [dependencies]
 toml = "^0.5"
@@ -31,3 +31,4 @@ anyhow = "1"
 
 [profile.release]
 lto='thin'
+strip='debuginfo'
