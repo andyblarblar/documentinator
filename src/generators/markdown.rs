@@ -75,20 +75,20 @@ impl Generator for MarkdownGenerator {
 
             //Launchfile
             if let Some(ref launch) = node.launch {
-                writeln!(
-                    &mut buf,
-                    "# Launch \n `{}` \n {} \n",
-                    launch.file_path, launch.usage
-                )?;
+                writeln!(&mut buf, "# Launch")?;
 
-                //Launch args
-                if let Some(ref args) = launch.args {
-                    writeln!(&mut buf, "## Args")?;
+                for launch in launch {
+                    writeln!(&mut buf, "## File \n {} \n \n {}", launch.file_path, launch.usage)?;
 
-                    for arg in args {
-                        writeln!(&mut buf, "- `{}`: {}", arg.name, arg.description)?;
+                    //Launch args
+                    if let Some(ref args) = launch.args {
+                        writeln!(&mut buf, "### Args")?;
+
+                        for arg in args {
+                            writeln!(&mut buf, "- `{}`: {}", arg.name, arg.description)?;
+                        }
+                        writeln!(&mut buf)?;
                     }
-                    writeln!(&mut buf)?;
                 }
             }
 
@@ -96,7 +96,6 @@ impl Generator for MarkdownGenerator {
             if let Some(ref misc) = node.misc {
                 writeln!(&mut buf, "# Misc \n {} ", misc)?;
             }
-
             Ok(buf)
         }
 

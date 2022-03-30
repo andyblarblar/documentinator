@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["Andrew Ealovega"]
 
 description = """
-ROS2 documentation generator and linter
+ROS2 documentation generator
 """
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/andyblarblar/documentinator"

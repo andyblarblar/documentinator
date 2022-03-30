@@ -1,9 +1,7 @@
 # Behold, the Documentinator!
 
-Documentinator (aka docTor or doctor) is a Ros2 documentation generator and linter. It takes well-defined and enforced
+Documentinator (aka docTor or doctor) is a Ros2 documentation generator. It takes well-defined and enforced
 config files and produces common node documentation in order to ease the burden of managing documentation style and copying.
-It can also (sometime, WIP) lint the source files mentioned in the config file to ensure that the documentation is up-to-date.
-
 
 To install doctor, first [install rust](https://www.rust-lang.org/learn/get-started), then run: ``cargo install documentinator``. 
 Doctor should now be on your path. Just run this command again to update when possible.
@@ -15,7 +13,6 @@ Doctor is currently usable for documentation generation, but nothing else. It al
 - [x] Create init
 - [x] Create Generators
 - [ ] Alias to doctor
-- [ ] Create linters
 - [ ] Improve CI experience
 - [ ] Tidy up and document
 
@@ -24,8 +21,6 @@ docTor has 3 commands:
 `doctor init` - creates sample TOML
 
 `doctor gen` - generates documents
-
-`doctor verify` - runs  linter on code to validate docs are correct
 
 ### Generating
 
@@ -88,3 +83,51 @@ description = 'Some arg to the launchfile'
 name = 'arg2'
 description = 'Another arg to the launchfile'
 ```
+
+### TOML Format
+Config files have the following valid structure.
+
+> Note: tags marked 'Optional' can be omitted in the toml.
+
+- `package_name`: String
+- `repo`: String
+- `nodes`: Array of
+  - `node_name`: String
+  - `source_file`: Array of strings
+  - `summary`: String
+  - `potential_improvements`: Optional string
+  - `misc`: Optional string
+  - `publishes`: Optional array of
+    - `name`: String
+    - `description`: String
+  - `subscribes`: Optional array of 
+    - `name`: String
+    - `description`: String
+  - `params`: Optional array of
+    - `name`: String
+    - `description`: String
+  - `launch`: Optional array of
+    - `file_path`: String
+    - `usage`: String
+    - `args`: Optional array of 
+      - `name`: String
+      - `description`: String
+      
+
+### Usage examples
+
+Create example config for node called 'node_name':
+
+``` documentinator init node_name```
+
+Generate markdown files for all configs in this directory:
+
+```documentinator gen .```
+
+Generate markdown files for all configs in this and all subdirectories:
+
+```documentinator gen -r .```
+
+Generate a markdown readme that links to all other generated node docs (and also generates them):
+
+```documentinator gen --readme .```

@@ -32,7 +32,7 @@ pub struct Node {
     /// Node Parameters
     pub params: Option<Vec<Param>>,
     /// Launchfile information
-    pub launch: Option<LaunchInfo>,
+    pub launch: Option<Vec<LaunchInfo>>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]

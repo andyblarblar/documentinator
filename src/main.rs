@@ -60,9 +60,6 @@ fn main() -> Result<()> {
 
             println!("Successfully created {node_name}.doctor.toml");
         }
-        Commands::Verify { .. } => {
-            todo!()
-        }
     }
 
     Ok(())

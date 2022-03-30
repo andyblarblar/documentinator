@@ -48,8 +48,5 @@ pub enum Commands {
         node_name: String,
         #[clap(flatten)]
         verbose: clap_verbosity_flag::Verbosity,
-    },
-
-    /// Lint source files to ensure accurate documentation (WIP)
-    Verify {}, //TODO
+    }
 }

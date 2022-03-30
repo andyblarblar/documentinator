@@ -39,7 +39,7 @@ name = 'kernel_size'
 description = 'Size of the erosion kernel. Default 5'
 
 #Your launchfile info (optional)
-[nodes.launch]
+[[nodes.launch]]
 file_path = './launch/WLD.launch.py'
 usage = 'just launch I guess'
 
