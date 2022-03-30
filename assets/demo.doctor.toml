@@ -43,6 +43,11 @@ description = 'Size of the erosion kernel. Default 5'
 file_path = './launch/WLD.launch.py'
 usage = 'just launch I guess'
 
+#Any topic remappings from the launchfile (optional)
+[[nodes.launch.remap]]
+from = '/some/topic'
+to = '/some/other/topic'
+
 [[nodes.launch.args]]
 name = 'arg1'
 description = 'Some arg to the launchfile'

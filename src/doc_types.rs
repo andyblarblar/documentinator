@@ -52,4 +52,11 @@ pub struct LaunchInfo {
     pub file_path: String,
     pub usage: String,
     pub args: Option<Vec<Param>>,
+    pub remap: Option<Vec<Remap>>
+}
+
+#[derive(Deserialize, Serialize, Clone, Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Default)]
+pub struct Remap {
+    pub from: String,
+    pub to: String
 }

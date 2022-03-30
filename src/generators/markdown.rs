@@ -78,7 +78,17 @@ impl Generator for MarkdownGenerator {
                 writeln!(&mut buf, "# Launch")?;
 
                 for launch in launch {
-                    writeln!(&mut buf, "## File \n {} \n \n {}", launch.file_path, launch.usage)?;
+                    writeln!(&mut buf, "## File \n {} \n \n {} \n", launch.file_path, launch.usage)?;
+
+                    //Remappings
+                    if let Some(ref remappings) = launch.remap {
+                        writeln!(&mut buf, "### Remappings")?;
+
+                        for map in remappings {
+                            writeln!(&mut buf, "- from `{}` to `{}`", map.from, map.to)?;
+                        }
+                        writeln!(&mut buf)?;
+                    }
 
                     //Launch args
                     if let Some(ref args) = launch.args {

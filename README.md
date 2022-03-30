@@ -13,6 +13,7 @@ Doctor is currently usable for documentation generation, but nothing else. It al
 - [x] Create init
 - [x] Create Generators
 - [ ] Alias to doctor
+- [ ] Add mdbook generation support
 - [ ] Improve CI experience
 - [ ] Tidy up and document
 
@@ -71,9 +72,13 @@ description = 'The standard camera info topic, used to find things like resoluti
 name = 'kernel_size'
 description = 'Size of the erosion kernel. Default 5'
 
-[nodes.launch]
+[[nodes.launch]]
 file_path = '/launch/WLD.launch.py'
 usage = 'just launch I guess'
+
+[[nodes.launch.remap]]
+from = 'camera_cloud'
+to = 'foo_cloud'
 
 [[nodes.launch.args]]
 name = 'arg1'
@@ -112,6 +117,9 @@ Config files have the following valid structure.
     - `args`: Optional array of 
       - `name`: String
       - `description`: String
+    - `remap`: Optional array of 
+      - `from`: String
+      - `to`: String
       
 
 ### Usage examples
