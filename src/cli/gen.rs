@@ -1,6 +1,6 @@
 //! Logic for the `gen` command.
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::fs::{DirEntry, File};
 use std::io::Write;
 use std::path::PathBuf;
@@ -127,26 +127,39 @@ fn process_file(
 
 /// Generates a readme file in the dest dir that contains a table of contents to the other node docs.
 fn generate_readme(comm: &GenCommand, docs: &[Doc], generator: &dyn Generator) -> Result<()> {
+    //Create file
     let mut path = PathBuf::from(comm.dest_dir.clone());
     path.push("NODES_README.md");
     let mut file = File::create(path)?;
 
-    // Add a block for each package TODO find a way to group different docs with the same package name
-    for doc in docs {
-        file.write_all(format!("# Nodes in package {}\n", &doc.package_name).as_bytes())?;
-        for node in doc.nodes.iter() {
-            let mut file_path = PathBuf::from(comm.dest_dir.clone());
-            file_path.push(generator.add_file_extension(&node.node_name));
+    // Map all docs in the same package together, so we can print them in the same place
+    let mut fused_docs: HashMap<&str, Vec<&Doc>> = HashMap::new();
+    docs.iter().for_each(|doc| {
+        fused_docs.entry(&doc.package_name).or_default().push(doc);
+    });
 
-            file.write_all(format!("- [{}](", &node.node_name).as_bytes())?;
-            file.write_all(
-                file_path
-                    .to_str()
-                    .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::Other))?
-                    .as_bytes(),
-            )?;
-            file.write_all(&[b')', b'\n'])?;
+    // Add a block for each package
+    for (package, docs) in fused_docs.iter() {
+        file.write_all(format!("# Nodes in package {}\n", package).as_bytes())?;
+
+        // Link all nodes in package
+        for doc in docs {
+            for node in &doc.nodes {
+                let mut file_path = PathBuf::from(comm.dest_dir.clone());
+                file_path.push(generator.add_file_extension(&node.node_name));
+
+                file.write_all(format!("- [{}](", &node.node_name).as_bytes())?;
+                file.write_all(
+                    file_path
+                        .to_str()
+                        .ok_or_else(|| std::io::Error::from(std::io::ErrorKind::Other))?
+                        .as_bytes(),
+                )?;
+                file.write_all(&[b')', b'\n'])?;
+            }
         }
+
+        file.write_all(&[b'\n'])?;
     }
     Ok(())
 }

@@ -1,6 +1,6 @@
 [package]
 name = "documentinator"
-version = "0.0.6"
+version = "0.0.7"
 edition = "2021"
 authors = ["Andrew Ealovega"]
 
@@ -31,4 +31,4 @@ anyhow = "1"
 
 [profile.release]
 lto='thin'
-strip='debuginfo'
+strip='symbols'
